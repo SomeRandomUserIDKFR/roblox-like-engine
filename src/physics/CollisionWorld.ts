@@ -156,8 +156,17 @@ export class CollisionWorld {
           velocity.x = 0;
         }
       }
-      // Catch ramps after X even if not previously grounded (angle clip)
-      if (this.supportOnSurface(root, collider, wasGrounded || stepped, ascending)) {
+      // Catch ramps after X even if not previously grounded (angle clip).
+      // supportOnSurface still un-phases (pushes feet out of the slope), but
+      // while ascending we must not zero the jump velocity or mark us grounded
+      // — otherwise jumping while walking up a ramp cancels the jump.
+      const onSurfaceX = this.supportOnSurface(
+        root,
+        collider,
+        wasGrounded || stepped,
+        ascending,
+      );
+      if (onSurfaceX && !ascending) {
         velocityY.value = 0;
         stepped = true;
       }
@@ -177,14 +186,27 @@ export class CollisionWorld {
           velocity.z = 0;
         }
       }
-      if (this.supportOnSurface(root, collider, wasGrounded || stepped, ascending)) {
+      const onSurfaceZ = this.supportOnSurface(
+        root,
+        collider,
+        wasGrounded || stepped,
+        ascending,
+      );
+      if (onSurfaceZ && !ascending) {
         velocityY.value = 0;
         stepped = true;
       }
     }
 
-    // Stick / un-phase while walking
-    if (this.supportOnSurface(root, collider, wasGrounded || stepped, ascending)) {
+    // Stick / un-phase while walking. While ascending this only un-phases and
+    // leaves the jump velocity intact (see the ramp note above).
+    const onSurface = this.supportOnSurface(
+      root,
+      collider,
+      wasGrounded || stepped,
+      ascending,
+    );
+    if (onSurface && !ascending) {
       velocityY.value = 0;
       stepped = true;
     }
@@ -237,7 +259,8 @@ export class CollisionWorld {
         collider,
         wasGrounded || stepped,
         velocityY.value > 0,
-      )
+      ) &&
+      velocityY.value <= 0
     ) {
       velocityY.value = 0;
       hitFloor = true;
