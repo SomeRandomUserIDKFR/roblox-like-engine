@@ -136,6 +136,11 @@ export class CollisionWorld {
   ): MoveCollideResult {
     const canStep = wasGrounded && velocityY.value <= 0.15;
     let stepped = false;
+    // While moving upward (e.g. just after a jump) the feet are still level
+    // with the ground for a frame. Ground-stick passes must only un-phase
+    // (push up out of solids), never snap back down — otherwise they cancel
+    // the jump's upward velocity before the body can rise.
+    const ascending = velocityY.value > 0;
 
     const dx = velocity.x * dt;
     if (dx !== 0) {
@@ -152,7 +157,7 @@ export class CollisionWorld {
         }
       }
       // Catch ramps after X even if not previously grounded (angle clip)
-      if (this.supportOnSurface(root, collider, wasGrounded || stepped, false)) {
+      if (this.supportOnSurface(root, collider, wasGrounded || stepped, ascending)) {
         velocityY.value = 0;
         stepped = true;
       }
@@ -172,14 +177,14 @@ export class CollisionWorld {
           velocity.z = 0;
         }
       }
-      if (this.supportOnSurface(root, collider, wasGrounded || stepped, false)) {
+      if (this.supportOnSurface(root, collider, wasGrounded || stepped, ascending)) {
         velocityY.value = 0;
         stepped = true;
       }
     }
 
     // Stick / un-phase while walking
-    if (this.supportOnSurface(root, collider, wasGrounded || stepped, false)) {
+    if (this.supportOnSurface(root, collider, wasGrounded || stepped, ascending)) {
       velocityY.value = 0;
       stepped = true;
     }
@@ -221,8 +226,8 @@ export class CollisionWorld {
     if (sep.hitX) velocity.x = 0;
     if (sep.hitZ) velocity.z = 0;
 
-    // Final anti-phase pass
-    if (this.supportOnSurface(root, collider, true, false)) {
+    // Final anti-phase pass — still only push up (not snap down) while rising
+    if (this.supportOnSurface(root, collider, true, velocityY.value > 0)) {
       velocityY.value = 0;
       hitFloor = true;
     }
