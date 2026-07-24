@@ -38,9 +38,9 @@ export class ChatBubbles {
     el.className = "chat-bubble";
     el.textContent = t.slice(0, 200);
     // Newest goes last so column layout puts it at the bottom (nearest the head).
+    // The bubble pops in via a CSS @keyframes animation (no class-swap needed).
     this.container.appendChild(el);
     this.bubbles.push({ el, born: performance.now() });
-    requestAnimationFrame(() => el.classList.add("chat-bubble--in"));
 
     while (this.bubbles.length > MAX) {
       const old = this.bubbles.shift();
