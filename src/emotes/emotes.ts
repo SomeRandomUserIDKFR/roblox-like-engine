@@ -95,14 +95,16 @@ export function emotePose(name: EmoteName, t: number): EmotePose {
       return p;
     }
     case "dance2": {
-      // Both arms up, swaying left/right with a body roll.
-      const sway = Math.sin(t * 3.4);
-      p.leftArm = { x: -2.75, z: -0.45 + 0.55 * sway };
-      p.rightArm = { x: -2.75, z: 0.45 + 0.55 * sway };
-      p.leftLeg = { x: 0, z: -0.05 + 0.05 * sway };
-      p.rightLeg = { x: 0, z: 0.05 + 0.05 * sway };
-      p.torsoRz = 0.13 * sway;
-      p.bob = 0.05 * (1 + Math.cos(t * 6.8)) * 0.5;
+      // Official R6 dance2: both arms held straight up overhead and waved from
+      // side to side while the whole upper body leans with them — a stiff,
+      // rhythmic, almost robotic sway. The legs counter the torso lean so the
+      // feet stay planted and the character rocks over them.
+      const sway = Math.sin(t * 3.2);
+      p.leftArm = { x: -2.9, z: -0.2 + 0.6 * sway };
+      p.rightArm = { x: -2.9, z: 0.2 + 0.6 * sway };
+      p.torsoRz = 0.3 * sway;
+      p.leftLeg = { x: 0, z: -0.3 * sway };
+      p.rightLeg = { x: 0, z: -0.3 * sway };
       return p;
     }
     case "dance3": {
