@@ -100,11 +100,11 @@ export function emotePose(name: EmoteName, t: number): EmotePose {
     case "dance2": {
       // Official R6 dance2: arms held out to the sides while the whole body
       // slides / shifts from side to side, the arms tilting with each shift.
-      const sway = Math.sin(t * 3.0);
-      p.leftArm = { x: 0.1, z: -1.4 - 0.25 * sway };
-      p.rightArm = { x: 0.1, z: 1.4 - 0.25 * sway };
-      p.torsoRz = 0.1 * sway;
-      p.shiftX = 0.5 * sway;
+      const sway = Math.sin(t * 2.8);
+      p.leftArm = { x: 0.1, z: -1.4 - 0.3 * sway };
+      p.rightArm = { x: 0.1, z: 1.4 - 0.3 * sway };
+      p.torsoRz = 0.14 * sway;
+      p.shiftX = 0.9 * sway;
       p.bob = 0.04 * Math.abs(sway);
       return p;
     }
