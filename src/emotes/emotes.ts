@@ -46,6 +46,8 @@ export interface EmotePose {
   torsoRy: number;
   torsoRz: number;
   bob: number;
+  /** Lateral body shift (studs) — slides the whole character side to side. */
+  shiftX: number;
 }
 
 function rest(): EmotePose {
@@ -58,6 +60,7 @@ function rest(): EmotePose {
     torsoRy: 0,
     torsoRz: 0,
     bob: 0,
+    shiftX: 0,
   };
 }
 
@@ -95,16 +98,14 @@ export function emotePose(name: EmoteName, t: number): EmotePose {
       return p;
     }
     case "dance2": {
-      // Official R6 dance2: both arms held straight up overhead and waved from
-      // side to side while the whole upper body leans with them — a stiff,
-      // rhythmic, almost robotic sway. The legs counter the torso lean so the
-      // feet stay planted and the character rocks over them.
-      const sway = Math.sin(t * 3.2);
-      p.leftArm = { x: -2.9, z: -0.2 + 0.6 * sway };
-      p.rightArm = { x: -2.9, z: 0.2 + 0.6 * sway };
-      p.torsoRz = 0.3 * sway;
-      p.leftLeg = { x: 0, z: -0.3 * sway };
-      p.rightLeg = { x: 0, z: -0.3 * sway };
+      // Official R6 dance2: arms held out to the sides while the whole body
+      // slides / shifts from side to side, the arms tilting with each shift.
+      const sway = Math.sin(t * 3.0);
+      p.leftArm = { x: 0.1, z: -1.4 - 0.25 * sway };
+      p.rightArm = { x: 0.1, z: 1.4 - 0.25 * sway };
+      p.torsoRz = 0.1 * sway;
+      p.shiftX = 0.5 * sway;
+      p.bob = 0.04 * Math.abs(sway);
       return p;
     }
     case "dance3": {

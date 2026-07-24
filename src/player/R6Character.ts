@@ -558,6 +558,7 @@ export class R6Character {
     torso.rotation.y += (0 - torso.rotation.y) * tk;
     torso.rotation.z += (0 - torso.rotation.z) * tk;
     torso.position.y += (0 - torso.position.y) * tk;
+    torso.position.x += (0 - torso.position.x) * tk;
   }
 
   /**
@@ -593,6 +594,7 @@ export class R6Character {
     torso.rotation.y += (pose.torsoRy - torso.rotation.y) * k;
     torso.rotation.z += (pose.torsoRz - torso.rotation.z) * k;
     torso.position.y += (pose.bob - torso.position.y) * k;
+    torso.position.x += (pose.shiftX - torso.position.x) * k;
   }
 
   /** @deprecated use updateAnimation */
