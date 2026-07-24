@@ -171,12 +171,21 @@ export class PlayerMotor {
     this.solidY = character.root.position.y;
     if (this.displayY === null) this.displayY = this.solidY;
 
-    // Very minor ease when snapping up (step-up); fall/catch-up stays nearly instant
-    const rising = this.solidY > this.displayY + 0.002;
-    const yT = 1 - Math.exp(-(rising ? 36 : 70) * dt);
-    this.displayY += (this.solidY - this.displayY) * yT;
-    if (Math.abs(this.solidY - this.displayY) < 0.0005) {
+    if (!this.grounded) {
+      // Airborne (jump / fall): gravity already produces a smooth arc, so the
+      // visible height must track physics exactly. Easing here would lag on the
+      // way down and then snap to the floor on landing instead of falling.
       this.displayY = this.solidY;
+    } else {
+      // Grounded: ease step-up / step-down transitions (e.g. walking stairs) so
+      // the mesh doesn't pop per step. Stair descent stays grounded, so it keeps
+      // this smoothing and never triggers the airborne fall animation.
+      const rising = this.solidY > this.displayY + 0.002;
+      const yT = 1 - Math.exp(-(rising ? 36 : 70) * dt);
+      this.displayY += (this.solidY - this.displayY) * yT;
+      if (Math.abs(this.solidY - this.displayY) < 0.0005) {
+        this.displayY = this.solidY;
+      }
     }
     character.root.position.y = this.displayY;
 

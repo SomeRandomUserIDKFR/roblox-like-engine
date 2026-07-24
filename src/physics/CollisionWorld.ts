@@ -226,8 +226,19 @@ export class CollisionWorld {
     if (sep.hitX) velocity.x = 0;
     if (sep.hitZ) velocity.z = 0;
 
-    // Final anti-phase pass — still only push up (not snap down) while rising
-    if (this.supportOnSurface(root, collider, true, velocityY.value > 0)) {
+    // Final anti-phase pass. Only stick DOWN (up to SLOPE_STICK) when walking a
+    // surface (grounded / stepped) — e.g. down stairs, which must stay grounded
+    // with no fall animation. While airborne (a real jump or fall) this must not
+    // yank the body to the floor from up to SLOPE_STICK away; let gravity land
+    // it (GROUND_SNAP still catches the final contact). Rising stays push-up only.
+    if (
+      this.supportOnSurface(
+        root,
+        collider,
+        wasGrounded || stepped,
+        velocityY.value > 0,
+      )
+    ) {
       velocityY.value = 0;
       hitFloor = true;
     }
