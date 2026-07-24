@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roblox-like Engine — Prototype</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #1a1a22;
+        font-family: system-ui, sans-serif;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      #hud {
+        position: fixed;
+        left: 12px;
+        bottom: 12px;
+        color: #e8e8ef;
+        font-size: 13px;
+        line-height: 1.45;
+        opacity: 0.85;
+        pointer-events: none;
+        text-shadow: 0 1px 2px #0008;
+        z-index: 5;
+      }
+
+      #hotbar {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+        z-index: 6;
+        pointer-events: none;
+      }
+
+      #hotbar.hotbar--empty {
+        display: none;
+      }
+
+      .hotbar-slot {
+        pointer-events: auto;
+        width: 64px;
+        height: 64px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        background: rgba(20, 22, 28, 0.72);
+        color: #f2f2f7;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        transition: border-color 0.12s ease, transform 0.12s ease;
+      }
+
+      .hotbar-slot:hover {
+        border-color: rgba(255, 255, 255, 0.7);
+        transform: translateY(-2px);
+      }
+
+      .hotbar-slot--equipped {
+        border-color: #5eb1ff;
+        box-shadow:
+          0 0 0 1px rgba(94, 177, 255, 0.5),
+          0 4px 14px rgba(0, 0, 0, 0.35);
+      }
+
+      .hotbar-slot__key {
+        position: absolute;
+        align-self: flex-start;
+        margin: -22px 0 0 -2px;
+        font-size: 11px;
+        font-weight: 700;
+        opacity: 0.9;
+        text-shadow: 0 1px 2px #000a;
+      }
+
+      .hotbar-slot {
+        position: relative;
+      }
+
+      .hotbar-slot__icon {
+        font-size: 22px;
+        line-height: 1;
+      }
+
+      .hotbar-slot__name {
+        font-size: 10px;
+        opacity: 0.85;
+        max-width: 56px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="hud">
+      WASD move · ↑↓ forward/back · ←→ pan · Space jump · 0–9 hotbar<br />
+      Shift lock · RMB pan · Scroll/IO zoom · LMB slash · double-LMB lunge<br />
+      <span id="shiftlock">Shift Lock: OFF</span> · <span id="backend">…</span>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
