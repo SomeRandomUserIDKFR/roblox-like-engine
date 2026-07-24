@@ -66,11 +66,11 @@ export function emotePose(name: EmoteName, t: number): EmotePose {
   const p = rest();
   switch (name) {
     case "wave": {
-      // Right arm overhead, hand sweeping side to side.
-      const w = Math.sin(t * 9);
-      p.rightArm = { x: -2.8, z: 0.3 + 0.5 * w };
+      // Right arm overhead, sweeping side to side around vertical.
+      const w = Math.sin(t * 8);
+      p.rightArm = { x: -2.85, z: 0.28 * w };
       p.leftArm = { x: -0.05, z: 0 };
-      p.torsoRy = -0.06;
+      p.torsoRy = -0.05;
       return p;
     }
     case "point": {
@@ -81,16 +81,17 @@ export function emotePose(name: EmoteName, t: number): EmotePose {
       return p;
     }
     case "dance": {
-      // Classic disco point — alternating arm up on the diagonal, hip twist.
-      const s = Math.sin(t * 5);
-      const rUp = Math.max(0, s);
-      const lUp = Math.max(0, -s);
-      p.rightArm = { x: -0.2 - 2.2 * rUp, z: 0.15 + 0.5 * rUp };
-      p.leftArm = { x: -0.2 - 2.2 * lUp, z: -0.15 - 0.5 * lUp };
-      p.leftLeg = { x: 0.14 * s, z: 0 };
-      p.rightLeg = { x: -0.14 * s, z: 0 };
-      p.torsoRy = 0.18 * s;
-      p.bob = 0.06 * Math.abs(s);
+      // Classic disco point — alternating arm thrust up on the diagonal, with a
+      // hip twist and bounce. sqrt shaping makes the raised arm snap up and hold.
+      const s = Math.sin(t * 4);
+      const rUp = Math.sqrt(Math.max(0, s));
+      const lUp = Math.sqrt(Math.max(0, -s));
+      p.rightArm = { x: -0.1 - 2.5 * rUp, z: 0.35 + 0.35 * rUp };
+      p.leftArm = { x: -0.1 - 2.5 * lUp, z: -0.35 - 0.35 * lUp };
+      p.leftLeg = { x: 0.16 * s, z: 0 };
+      p.rightLeg = { x: -0.16 * s, z: 0 };
+      p.torsoRy = 0.2 * s;
+      p.bob = 0.07 * Math.abs(s);
       return p;
     }
     case "dance2": {
@@ -114,10 +115,10 @@ export function emotePose(name: EmoteName, t: number): EmotePose {
       return p;
     }
     case "cheer": {
-      // Both arms overhead, shaking.
+      // Both arms straight overhead, shaking with a bounce.
       const w = Math.sin(t * 11);
-      p.leftArm = { x: -2.9, z: -0.2 - 0.22 * w };
-      p.rightArm = { x: -2.9, z: 0.2 - 0.22 * w };
+      p.leftArm = { x: -2.95, z: -0.12 - 0.12 * w };
+      p.rightArm = { x: -2.95, z: 0.12 - 0.12 * w };
       p.bob = 0.05 * (1 + Math.sin(t * 11)) * 0.5;
       return p;
     }
