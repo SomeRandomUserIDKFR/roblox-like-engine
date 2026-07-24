@@ -1,7 +1,7 @@
 import { Vector3, type PerspectiveCamera } from "three";
 
 /** How long a bubble stays fully visible before it starts fading (ms). */
-const LIFETIME = 8000;
+const LIFETIME = 12000;
 /** Fade-out duration (ms) — must match the CSS opacity transition. */
 const FADE = 700;
 /** Max bubbles stacked above the head at once (oldest drop off). */
