@@ -1,8 +1,9 @@
-import { Color, Scene } from "three";
+import { Color, Scene, Vector3 } from "three";
 import { LookControls } from "./camera/LookControls";
 import { ZoomCamera } from "./camera/ZoomCamera";
 import { EmoteController } from "./emotes/EmoteController";
 import { emotePose } from "./emotes/emotes";
+import { ChatBubbles } from "./ui/ChatBubbles";
 import { ChatCommand } from "./ui/ChatCommand";
 import { Input } from "./input/Input";
 import { Backpack } from "./inventory/Backpack";
@@ -42,9 +43,11 @@ async function main() {
   void hotbarUi;
 
   const emotes = new EmoteController();
+  const chatBubbles = new ChatBubbles();
   new ChatCommand(
     (name) => emotes.play(name),
     () => emotes.stop(),
+    (text) => chatBubbles.say(text),
   );
 
   const sword = createClassicSword();
@@ -89,6 +92,7 @@ async function main() {
 
   let last = performance.now();
   let wasFirstPerson = false;
+  const chatAnchor = new Vector3();
 
   function frame(now: number) {
     const dt = Math.min(0.05, (now - last) / 1000);
@@ -177,6 +181,11 @@ async function main() {
       wasFirstPerson = fp;
       look.onFirstPersonChange();
     }
+
+    // Chat bubbles float just above the head.
+    character.getEyeWorldPosition(chatAnchor);
+    chatAnchor.y += 1.0;
+    chatBubbles.update(zoom.camera, chatAnchor);
 
     renderer.render(scene, zoom.camera);
     requestAnimationFrame(frame);

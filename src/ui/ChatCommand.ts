@@ -1,10 +1,11 @@
 import { EMOTE_NAMES, isEmoteName, type EmoteName } from "../emotes/emotes";
 
 /**
- * Minimal Roblox-style chat command bar. Press `/` to open, type a command,
- * Enter to run, Esc to cancel. Currently understands `/e <emote>` (and bare
- * `/e` to stop). While the bar is focused, movement input is ignored (see
- * Input's text-field guard) so typing doesn't drive the character.
+ * Minimal Roblox-style chat bar. Press `/` to open, type, Enter to send, Esc to
+ * cancel. Plain text is sent as a chat message (shown as a bubble above the
+ * head); `/e <emote>` plays an emote and bare `/e` stops it. While the bar is
+ * focused, movement input is ignored (see Input's text-field guard) so typing
+ * doesn't drive the character.
  */
 export class ChatCommand {
   private readonly input: HTMLInputElement;
@@ -13,14 +14,16 @@ export class ChatCommand {
   constructor(
     private readonly onEmote: (name: EmoteName) => void,
     private readonly onStop: () => void,
+    private readonly onChat: (text: string) => void,
   ) {
     this.input = document.createElement("input");
     this.input.id = "chatbar";
     this.input.type = "text";
     this.input.autocomplete = "off";
     this.input.spellcheck = false;
-    this.input.setAttribute("aria-label", "Chat command");
-    this.input.placeholder = `/e dance   ·   ${EMOTE_NAMES.join(", ")}`;
+    this.input.maxLength = 200;
+    this.input.setAttribute("aria-label", "Chat");
+    this.input.placeholder = `Say something…   ·   /e ${EMOTE_NAMES.join(", ")}`;
     this.input.style.display = "none";
     document.body.appendChild(this.input);
     this.bind();
@@ -29,11 +32,8 @@ export class ChatCommand {
   private show() {
     this.open = true;
     this.input.style.display = "block";
-    this.input.value = "/";
+    this.input.value = "";
     this.input.focus();
-    // caret at end
-    const n = this.input.value.length;
-    this.input.setSelectionRange(n, n);
   }
 
   private hide() {
@@ -44,12 +44,20 @@ export class ChatCommand {
   }
 
   private run() {
-    const raw = this.input.value.trim().toLowerCase();
-    const m = raw.match(/^\/e(?:\s+(\w+))?$/);
-    if (m) {
-      const name = m[1];
-      if (!name) this.onStop();
-      else if (isEmoteName(name)) this.onEmote(name);
+    const raw = this.input.value.trim();
+    if (!raw) {
+      this.hide();
+      return;
+    }
+    if (raw.startsWith("/")) {
+      const m = raw.toLowerCase().match(/^\/e(?:\s+(\w+))?$/);
+      if (m) {
+        const name = m[1];
+        if (!name) this.onStop();
+        else if (isEmoteName(name)) this.onEmote(name);
+      }
+    } else {
+      this.onChat(raw);
     }
     this.hide();
   }
