@@ -102,13 +102,12 @@ export class LookControls {
           ? SHIFT_LOOK_SENS
           : RMB_LOOK_SENS;
 
-      // mouse right → look/turn right; mouse up → look up
+      // mouse right → look/turn right; mouse up → look up.
+      // Raising phi tilts the view up in both third-person orbit and
+      // first-person (which looks along -sphericalDir), so the pitch sign is
+      // the same for both — mouse up (negative movementY) must raise phi.
       this.zoom.panBy(e.movementX * sens);
-      if (this.zoom.isFirstPerson()) {
-        this.zoom.pitchBy(e.movementY * sens);
-      } else {
-        this.zoom.pitchBy(-e.movementY * sens);
-      }
+      this.zoom.pitchBy(-e.movementY * sens);
     });
   }
 }
