@@ -10,7 +10,10 @@ export function setupLighting(scene: Scene) {
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   sun.shadow.bias = -0.0002;
-  sun.shadow.normalBias = 0.04;
+  // The shadow frustum is large (~140 studs) so each of the 2048 texels covers
+  // ~0.07 studs. normalBias must exceed that texel size or curved surfaces
+  // (rounded head/arms) self-shadow into acne bands. 0.04 was too small.
+  sun.shadow.normalBias = 0.15;
   sun.shadow.radius = 4;
   sun.shadow.camera.near = 1;
   sun.shadow.camera.far = 160;
