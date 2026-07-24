@@ -110,12 +110,37 @@
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+
+      #chatbar {
+        position: fixed;
+        left: 12px;
+        bottom: 92px;
+        width: 380px;
+        max-width: 60vw;
+        padding: 8px 10px;
+        font-family: system-ui, sans-serif;
+        font-size: 13px;
+        color: #f2f2f7;
+        background: rgba(20, 22, 28, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 8px;
+        outline: none;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      }
+
+      #chatbar::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
     </style>
   </head>
   <body>
     <div id="hud">
       WASD move · ↑↓ forward/back · ←→ pan · Space jump · 0–9 hotbar<br />
       Shift lock · RMB pan · Scroll/IO zoom · LMB slash · double-LMB lunge<br />
+      Press / then <b>/e dance</b> · dance2 · dance3 · wave · point · cheer ·
+      laugh<br />
       <span id="shiftlock">Shift Lock: OFF</span> · <span id="backend">…</span>
     </div>
     <script type="module" src="/src/main.ts"></script>

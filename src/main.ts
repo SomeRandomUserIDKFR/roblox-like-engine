@@ -1,6 +1,9 @@
 import { Color, Scene } from "three";
 import { LookControls } from "./camera/LookControls";
 import { ZoomCamera } from "./camera/ZoomCamera";
+import { EmoteController } from "./emotes/EmoteController";
+import { emotePose } from "./emotes/emotes";
+import { ChatCommand } from "./ui/ChatCommand";
 import { Input } from "./input/Input";
 import { Backpack } from "./inventory/Backpack";
 import { HotbarUI } from "./inventory/HotbarUI";
@@ -37,6 +40,12 @@ async function main() {
   const hotbarUi = new HotbarUI(backpack);
   setupDemoBackpack(backpack);
   void hotbarUi;
+
+  const emotes = new EmoteController();
+  new ChatCommand(
+    (name) => emotes.play(name),
+    () => emotes.stop(),
+  );
 
   const sword = createClassicSword();
   character.setRightHandTool(sword);
@@ -114,15 +123,36 @@ async function main() {
 
     const planarSpeed = motor.integrate(dt, character, input, collision);
 
-    character.updateAnimation(
-      dt,
-      planarSpeed,
-      motor.grounded,
-      motor.velocityY,
-      swordOut ? swordControls.lunge.weight : 0,
-      swordOut ? 1 : 0,
-      swordOut ? swordControls.slash.weight : 0,
-    );
+    // Emotes play only while idle on the ground; movement, jumping, or a sword
+    // swing cancels them (classic Roblox behaviour).
+    const movementHeld =
+      input.isDown("KeyW") ||
+      input.isDown("KeyS") ||
+      input.isDown("KeyA") ||
+      input.isDown("KeyD") ||
+      input.isDown("ArrowUp") ||
+      input.isDown("ArrowDown");
+    const swordActive =
+      swordOut &&
+      (swordControls.slash.weight > 0.02 || swordControls.lunge.weight > 0.02);
+    if (!motor.grounded || planarSpeed > 0.6 || movementHeld || swordActive) {
+      emotes.stop();
+    }
+
+    if (emotes.active) {
+      character.applyEmotePose(dt, emotePose(emotes.name, emotes.elapsed));
+      emotes.tick(dt);
+    } else {
+      character.updateAnimation(
+        dt,
+        planarSpeed,
+        motor.grounded,
+        motor.velocityY,
+        swordOut ? swordControls.lunge.weight : 0,
+        swordOut ? 1 : 0,
+        swordOut ? swordControls.slash.weight : 0,
+      );
+    }
 
     const eye = character.getEyeWorldPosition();
     const focus = motor.getFocusPoint(character, LOOK_HEIGHT);

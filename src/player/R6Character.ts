@@ -16,6 +16,7 @@ import {
   DEFAULT_FACE_TEXTURE_ID,
   resolveFaceTexture,
 } from "../assets/FaceTextures";
+import type { EmotePose } from "../emotes/emotes";
 
 /** Shared R6 vertical size — torso, arms, and legs all match. */
 const PART_HEIGHT = 2;
@@ -549,6 +550,49 @@ export class R6Character {
     rightLeg.position.y += (this.legRest.right.y - rightLeg.position.y) * posBlend;
     leftLeg.position.z += (this.legRest.left.z - leftLeg.position.z) * posBlend;
     rightLeg.position.z += (this.legRest.right.z - rightLeg.position.z) * posBlend;
+
+    // Ease the torso back to neutral (an emote may have left it leaned / bobbed).
+    const torso = this.parts.Torso.mesh;
+    const tk = 1 - Math.exp(-12 * dt);
+    torso.rotation.x += (0 - torso.rotation.x) * tk;
+    torso.rotation.y += (0 - torso.rotation.y) * tk;
+    torso.rotation.z += (0 - torso.rotation.z) * tk;
+    torso.position.y += (0 - torso.position.y) * tk;
+  }
+
+  /**
+   * Drive the body from a chat emote pose (see src/emotes). Eases the shoulder
+   * and hip joints toward the target while keeping the limbs seated in their
+   * rest sockets, plus a little torso lean / twist / bounce. Runs instead of
+   * {@link updateAnimation} while an emote is active and the player is idle.
+   */
+  applyEmotePose(dt: number, pose: EmotePose) {
+    const k = 1 - Math.exp(-16 * dt);
+    const swing = (j: Object3D, tx: number, tz: number) => {
+      j.rotation.x += (tx - j.rotation.x) * k;
+      j.rotation.z += (tz - j.rotation.z) * k;
+    };
+    const seat = (j: Object3D, restPos: Vector3) => {
+      j.position.x += (restPos.x - j.position.x) * k;
+      j.position.y += (restPos.y - j.position.y) * k;
+      j.position.z += (restPos.z - j.position.z) * k;
+    };
+
+    const { leftArm, rightArm, leftLeg, rightLeg } = this.joints;
+    swing(leftArm, pose.leftArm.x, pose.leftArm.z);
+    swing(rightArm, pose.rightArm.x, pose.rightArm.z);
+    swing(leftLeg, pose.leftLeg.x, pose.leftLeg.z);
+    swing(rightLeg, pose.rightLeg.x, pose.rightLeg.z);
+    seat(leftArm, this.armRest.left);
+    seat(rightArm, this.armRest.right);
+    seat(leftLeg, this.legRest.left);
+    seat(rightLeg, this.legRest.right);
+
+    const torso = this.parts.Torso.mesh;
+    torso.rotation.x += (pose.torsoRx - torso.rotation.x) * k;
+    torso.rotation.y += (pose.torsoRy - torso.rotation.y) * k;
+    torso.rotation.z += (pose.torsoRz - torso.rotation.z) * k;
+    torso.position.y += (pose.bob - torso.position.y) * k;
   }
 
   /** @deprecated use updateAnimation */

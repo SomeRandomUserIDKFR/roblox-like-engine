@@ -49,12 +49,26 @@ const TRACKED = new Set<string>([
   "Digit9",
 ]);
 
+function isTextFieldFocused(): boolean {
+  const el = document.activeElement as HTMLElement | null;
+  return (
+    !!el &&
+    (el.tagName === "INPUT" ||
+      el.tagName === "TEXTAREA" ||
+      el.isContentEditable)
+  );
+}
+
 export class Input {
   private readonly down = new Set<string>();
   private readonly pressed = new Set<string>();
 
   constructor() {
     window.addEventListener("keydown", (e) => {
+      // Ignore movement/hotbar keys while typing in a text field (e.g. the chat
+      // command bar) so input goes to the field, not the character. keyup is
+      // left unguarded so a key held before focusing never gets stuck down.
+      if (isTextFieldFocused()) return;
       if (!TRACKED.has(e.code)) return;
       e.preventDefault();
       if (!this.down.has(e.code)) this.pressed.add(e.code);
