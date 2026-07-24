@@ -5,6 +5,7 @@ import { EmoteController } from "./emotes/EmoteController";
 import { emotePose } from "./emotes/emotes";
 import { ChatBubbles } from "./ui/ChatBubbles";
 import { ChatCommand } from "./ui/ChatCommand";
+import { CustomizationPanel } from "./ui/CustomizationPanel";
 import { Input } from "./input/Input";
 import { Backpack } from "./inventory/Backpack";
 import { HotbarUI } from "./inventory/HotbarUI";
@@ -49,6 +50,7 @@ async function main() {
     () => emotes.stop(),
     (text) => chatBubbles.say(text),
   );
+  new CustomizationPanel(character);
 
   const sword = createClassicSword();
   character.setRightHandTool(sword);

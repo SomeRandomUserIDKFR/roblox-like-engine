@@ -172,6 +172,83 @@
         transform: translateY(-4px) scale(0.96);
       }
 
+      #customize-toggle {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 11;
+        padding: 8px 12px;
+        font-family: system-ui, sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #f2f2f7;
+        background: rgba(20, 22, 28, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 8px;
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      }
+      #customize-toggle:hover {
+        border-color: rgba(255, 255, 255, 0.7);
+      }
+
+      #customize-panel {
+        position: fixed;
+        top: 52px;
+        right: 12px;
+        z-index: 11;
+        width: 220px;
+        padding: 12px;
+        font-family: system-ui, sans-serif;
+        color: #f2f2f7;
+        background: rgba(20, 22, 28, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+      }
+      .customize-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .customize-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        margin: 6px 0;
+      }
+      .customize-row input[type="color"] {
+        width: 40px;
+        height: 26px;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 6px;
+        background: none;
+        cursor: pointer;
+      }
+      .customize-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .customize-actions button {
+        flex: 1;
+        padding: 6px 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #f2f2f7;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .customize-actions button:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
       /* Little tail under the newest (bottom) bubble, pointing at the head. */
       .chat-bubble:last-child::after {
         content: "";
@@ -193,6 +270,7 @@
       Shift lock · RMB pan · Scroll/IO zoom · LMB slash · double-LMB lunge<br />
       Press <b>/</b> to chat (bubble over head) · <b>/e dance</b> · dance2 ·
       dance3 · wave · point · cheer · laugh<br />
+      Press <b>C</b> or click <b>Customize</b> to recolor each body part<br />
       <span id="shiftlock">Shift Lock: OFF</span> · <span id="backend">…</span>
     </div>
     <script type="module" src="/src/main.ts"></script>

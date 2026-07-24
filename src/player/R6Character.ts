@@ -202,6 +202,11 @@ export class EnginePart {
     this.applyAppearance();
   }
 
+  /** Current base color as a 0xRRGGBB integer. */
+  getColorHex(): number {
+    return this.baseColor.getHex();
+  }
+
   setMaterialPreset(preset: "plastic" | "metal") {
     const mat = this.mesh.material as MeshStandardMaterial;
     if (preset === "metal") {
