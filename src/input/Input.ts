@@ -62,26 +62,46 @@ function isTextFieldFocused(): boolean {
 export class Input {
   private readonly down = new Set<string>();
   private readonly pressed = new Set<string>();
+  private readonly ac = new AbortController();
 
   constructor() {
-    window.addEventListener("keydown", (e) => {
-      // Ignore movement/hotbar keys while typing in a text field (e.g. the chat
-      // command bar) so input goes to the field, not the character. keyup is
-      // left unguarded so a key held before focusing never gets stuck down.
-      if (isTextFieldFocused()) return;
-      if (!TRACKED.has(e.code)) return;
-      e.preventDefault();
-      if (!this.down.has(e.code)) this.pressed.add(e.code);
-      this.down.add(e.code);
-    });
-    window.addEventListener("keyup", (e) => {
-      this.down.delete(e.code);
-      this.pressed.delete(e.code);
-    });
-    window.addEventListener("blur", () => {
-      this.down.clear();
-      this.pressed.clear();
-    });
+    const opts = { signal: this.ac.signal };
+    window.addEventListener(
+      "keydown",
+      (e) => {
+        // Ignore movement/hotbar keys while typing in a text field (e.g. the chat
+        // command bar) so input goes to the field, not the character. keyup is
+        // left unguarded so a key held before focusing never gets stuck down.
+        if (isTextFieldFocused()) return;
+        if (!TRACKED.has(e.code)) return;
+        e.preventDefault();
+        if (!this.down.has(e.code)) this.pressed.add(e.code);
+        this.down.add(e.code);
+      },
+      opts,
+    );
+    window.addEventListener(
+      "keyup",
+      (e) => {
+        this.down.delete(e.code);
+        this.pressed.delete(e.code);
+      },
+      opts,
+    );
+    window.addEventListener(
+      "blur",
+      () => {
+        this.down.clear();
+        this.pressed.clear();
+      },
+      opts,
+    );
+  }
+
+  dispose() {
+    this.ac.abort();
+    this.down.clear();
+    this.pressed.clear();
   }
 
   isDown(code: MoveKey) {

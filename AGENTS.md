@@ -2,9 +2,10 @@
 
 ## Cursor Cloud specific instructions
 
-This repo is a single-service frontend app: a Roblox-like 3D engine built with Vite +
-TypeScript + Three.js. There is no backend server (the "Renderer: WebGL2/WebGPU" text in
-the HUD refers to the graphics backend, not a network service).
+This repo is **PolyX** (engine) by **HedronX** (studio): a Roblox-like 3D client
+built with Vite + TypeScript + Three.js. There is no backend server (the
+"Renderer: WebGL2/WebGPU" text in the HUD refers to the graphics backend, not a
+network service).
 
 ### Commands (see `package.json` scripts)
 - Dev server: `npm run dev` (Vite on port `5173`; `vite.config.ts` has `open: true`, which

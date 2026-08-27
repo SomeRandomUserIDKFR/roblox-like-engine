@@ -15,7 +15,9 @@ export async function createRenderer() {
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.12;
   renderer.outputColorSpace = SRGBColorSpace;
-  document.body.prepend(renderer.domElement);
+  const mount =
+    document.getElementById("polyx-play") ?? document.body;
+  mount.prepend(renderer.domElement);
 
   const backendEl = document.getElementById("backend");
   if (backendEl) {

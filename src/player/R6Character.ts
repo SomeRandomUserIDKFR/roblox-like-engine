@@ -602,6 +602,27 @@ export class R6Character {
     torso.position.x += (pose.shiftX - torso.position.x) * k;
   }
 
+  /** Instantly snap joints to a pose (keyframe animation / scrubbing). */
+  snapToPose(pose: EmotePose) {
+    const { leftArm, rightArm, leftLeg, rightLeg } = this.joints;
+    leftArm.rotation.x = pose.leftArm.x;
+    leftArm.rotation.z = pose.leftArm.z;
+    rightArm.rotation.x = pose.rightArm.x;
+    rightArm.rotation.z = pose.rightArm.z;
+    leftLeg.rotation.x = pose.leftLeg.x;
+    leftLeg.rotation.z = pose.leftLeg.z;
+    rightLeg.rotation.x = pose.rightLeg.x;
+    rightLeg.rotation.z = pose.rightLeg.z;
+    leftArm.position.copy(this.armRest.left);
+    rightArm.position.copy(this.armRest.right);
+    leftLeg.position.copy(this.legRest.left);
+    rightLeg.position.copy(this.legRest.right);
+    const torso = this.parts.Torso.mesh;
+    torso.rotation.set(pose.torsoRx, pose.torsoRy, pose.torsoRz);
+    torso.position.y = pose.bob;
+    torso.position.x = pose.shiftX;
+  }
+
   /** @deprecated use updateAnimation */
   updateWalk(dt: number, moveSpeed: number, grounded: boolean) {
     this.updateAnimation(dt, moveSpeed, grounded, 0);

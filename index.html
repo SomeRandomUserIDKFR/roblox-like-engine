@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Roblox-like Engine — Prototype</title>
+    <title>PolyX — by HedronX</title>
     <style>
       * {
         margin: 0;
@@ -16,13 +16,62 @@
         height: 100%;
         overflow: hidden;
         background: #1a1a22;
-        font-family: system-ui, sans-serif;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
       canvas {
         display: block;
         width: 100%;
         height: 100%;
       }
+
+      .app-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        display: flex;
+        gap: 4px;
+        padding: 10px 14px;
+        pointer-events: none;
+      }
+      .app-nav__link {
+        pointer-events: auto;
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(18, 20, 28, 0.72);
+        color: #d8dce8;
+        font: 600 13px/1 "Segoe UI", system-ui, sans-serif;
+        letter-spacing: 0.04em;
+        padding: 8px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        text-decoration: none;
+        backdrop-filter: blur(8px);
+      }
+      .app-nav__link:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+      }
+      .app-nav__link--active {
+        background: #f2f4fa;
+        color: #14161e;
+        border-color: #f2f4fa;
+      }
+
+      body.route-hedronx {
+        overflow: hidden;
+        background: #1e1e1e;
+      }
+      body.route-hedronx #polyx-play,
+      body.route-hedronx #hotbar,
+      body.route-hedronx #chatbar,
+      body.route-hedronx #customize-toggle,
+      body.route-hedronx #customize-panel,
+      body.route-hedronx .chat-bubbles {
+        display: none !important;
+      }
+
       #hud {
         position: fixed;
         left: 12px;
@@ -265,13 +314,29 @@
     </style>
   </head>
   <body>
+    <nav class="app-nav" aria-label="App">
+      <a class="app-nav__link" id="nav-polyx" href="/" title="PolyX">PolyX</a>
+      <a
+        class="app-nav__link"
+        id="nav-hedronx"
+        href="/HedronX"
+        title="HedronX studio — also #HedronX"
+        >HedronX</a
+      >
+    </nav>
+
+    <div id="hedronx-studio" hidden></div>
+
+    <div id="polyx-play">
     <div id="hud">
+      <b>PolyX</b> · HedronX<br />
       WASD move · ↑↓ forward/back · ←→ pan · Space jump · 0–9 hotbar<br />
       Shift lock · RMB pan · Scroll/IO zoom · LMB slash · double-LMB lunge<br />
       Press <b>/</b> to chat (bubble over head) · <b>/e dance</b> · dance2 ·
       dance3 · wave · point · cheer · laugh<br />
       Press <b>C</b> or click <b>Customize</b> to recolor each body part<br />
       <span id="shiftlock">Shift Lock: OFF</span> · <span id="backend">…</span>
+    </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

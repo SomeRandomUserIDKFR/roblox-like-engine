@@ -12,6 +12,7 @@ export class LookControls {
   shiftLock = false;
   private rmbDown = false;
   private readonly shiftHud: HTMLElement | null;
+  private readonly ac = new AbortController();
 
   constructor(
     private readonly zoom: ZoomCamera,
@@ -20,6 +21,13 @@ export class LookControls {
     this.shiftHud = document.getElementById("shiftlock");
     this.bindEvents();
     this.updateShiftHud();
+  }
+
+  dispose() {
+    this.ac.abort();
+    if (document.pointerLockElement === this.getCanvas()) {
+      document.exitPointerLock();
+    }
   }
 
   isLookLocked(): boolean {
@@ -65,49 +73,66 @@ export class LookControls {
   }
 
   private bindEvents() {
-    window.addEventListener("contextmenu", (e) => e.preventDefault());
+    const opts = { signal: this.ac.signal };
+    window.addEventListener("contextmenu", (e) => e.preventDefault(), opts);
 
-    window.addEventListener("mousedown", (e) => {
-      if (e.button === 2) this.rmbDown = true;
-      this.syncPointerLock();
-    });
+    window.addEventListener(
+      "mousedown",
+      (e) => {
+        if (e.button === 2) this.rmbDown = true;
+        this.syncPointerLock();
+      },
+      opts,
+    );
 
-    window.addEventListener("mouseup", (e) => {
-      if (e.button !== 2) return;
-      this.rmbDown = false;
-      this.syncPointerLock();
-    });
-
-    window.addEventListener("blur", () => {
-      this.rmbDown = false;
-      this.syncPointerLock();
-    });
-
-    document.addEventListener("pointerlockchange", () => {
-      if (!document.pointerLockElement) {
+    window.addEventListener(
+      "mouseup",
+      (e) => {
+        if (e.button !== 2) return;
         this.rmbDown = false;
-        if (this.shiftLock && !this.zoom.isFirstPerson()) {
-          this.shiftLock = false;
-          this.updateShiftHud();
+        this.syncPointerLock();
+      },
+      opts,
+    );
+
+    window.addEventListener(
+      "blur",
+      () => {
+        this.rmbDown = false;
+        this.syncPointerLock();
+      },
+      opts,
+    );
+
+    document.addEventListener(
+      "pointerlockchange",
+      () => {
+        if (!document.pointerLockElement) {
+          this.rmbDown = false;
+          if (this.shiftLock && !this.zoom.isFirstPerson()) {
+            this.shiftLock = false;
+            this.updateShiftHud();
+          }
         }
-      }
-    });
+      },
+      opts,
+    );
 
-    window.addEventListener("mousemove", (e) => {
-      if (document.pointerLockElement !== this.getCanvas()) return;
-      if (!this.isLookLocked() && !this.rmbDown) return;
-      const sens = this.zoom.isFirstPerson()
-        ? FP_LOOK_SENS
-        : this.isLookLocked()
-          ? SHIFT_LOOK_SENS
-          : RMB_LOOK_SENS;
+    window.addEventListener(
+      "mousemove",
+      (e) => {
+        if (document.pointerLockElement !== this.getCanvas()) return;
+        if (!this.isLookLocked() && !this.rmbDown) return;
+        const sens = this.zoom.isFirstPerson()
+          ? FP_LOOK_SENS
+          : this.isLookLocked()
+            ? SHIFT_LOOK_SENS
+            : RMB_LOOK_SENS;
 
-      // mouse right → look/turn right; mouse up → look up.
-      // Raising phi tilts the view up in both third-person orbit and
-      // first-person (which looks along -sphericalDir), so the pitch sign is
-      // the same for both — mouse up (negative movementY) must raise phi.
-      this.zoom.panBy(e.movementX * sens);
-      this.zoom.pitchBy(-e.movementY * sens);
-    });
+        this.zoom.panBy(e.movementX * sens);
+        this.zoom.pitchBy(-e.movementY * sens);
+      },
+      opts,
+    );
   }
 }

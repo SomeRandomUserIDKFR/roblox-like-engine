@@ -46,6 +46,11 @@ export class PlayerMotor {
   private solidY: number | null = null;
   private displayY: number | null = null;
 
+  /** Tuned by TraitRuntime (slippery / grippy). */
+  moveSmooth = MOVE_SMOOTH;
+  stopSmooth = STOP_SMOOTH;
+  speedScale = 1;
+
   private readonly move = new Vector3();
   private readonly desiredVel = new Vector3();
   private readonly forward = new Vector3();
@@ -57,6 +62,16 @@ export class PlayerMotor {
     this.forward.set(-Math.cos(yaw), 0, -Math.sin(yaw));
     this.right.set(Math.sin(yaw), 0, -Math.cos(yaw));
     return { forward: this.forward, right: this.right };
+  }
+
+  getWishVelocity() {
+    return this.desiredVel;
+  }
+
+  setSurfaceFeel(moveSmooth: number, stopSmooth: number, speedScale: number) {
+    this.moveSmooth = moveSmooth;
+    this.stopSmooth = stopSmooth;
+    this.speedScale = speedScale;
   }
 
   /**
@@ -80,7 +95,7 @@ export class PlayerMotor {
       this.move.addScaledVector(right, axisR);
       const len = this.move.length();
       if (len > 1e-6) {
-        this.move.multiplyScalar(MOVE_SPEED / len);
+        this.move.multiplyScalar((MOVE_SPEED * this.speedScale) / len);
       }
       this.desiredVel.copy(this.move);
     } else {
@@ -88,7 +103,7 @@ export class PlayerMotor {
     }
 
     const stopping = this.grounded && this.desiredVel.lengthSq() < 1e-6;
-    const moveRate = stopping ? STOP_SMOOTH : MOVE_SMOOTH;
+    const moveRate = stopping ? this.stopSmooth : this.moveSmooth;
     const blend = 1 - Math.exp(-moveRate * dt);
     this.velocity.lerp(this.desiredVel, blend);
     if (this.velocity.lengthSq() < 0.0025) this.velocity.set(0, 0, 0);

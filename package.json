@@ -1,15 +1,19 @@
 {
-  "name": "roblox-like-engine",
+  "name": "polyx",
   "private": true,
   "version": "0.0.1",
+  "description": "PolyX engine by HedronX",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node server/mp-server.mjs"
   },
   "dependencies": {
-    "three": "^0.172.0"
+    "sucrase": "^3.35.1",
+    "three": "^0.172.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/three": "^0.172.0",
